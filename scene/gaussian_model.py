@@ -20,8 +20,14 @@ from utils.sh_utils import RGB2SH
 from simple_knn._C import distCUDA2
 from utils.graphics_utils import BasicPointCloud
 from utils.general_utils import strip_symmetric, build_scaling_rotation
-import trimesh
-from utils.vis_utils import save_points
+try:
+    import trimesh
+except:
+    print("Warning: trimesh module not imported.")
+try:
+    from utils.vis_utils import save_points
+except:
+    print("Warning: utils.vis_utils module not imported.")
 from scene.appearance_network import AppearanceNetwork
 
 class GaussianModel:

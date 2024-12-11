@@ -102,10 +102,16 @@ class OptimizationParams(ParamGroup):
         self.densify_grad_threshold = 0.0002
         super().__init__(parser, "Optimization Parameters")
 
-def get_combined_args(parser : ArgumentParser):
+def get_combined_args(parser : ArgumentParser, args=None):
     cmdlne_string = sys.argv[1:]
     cfgfile_string = "Namespace()"
     args_cmdline = parser.parse_args(cmdlne_string)
+    if args is not None:
+        merged_dict = vars(args_cmdline).copy()
+        for k,v in vars(args).items():
+            if v != None:
+                merged_dict[k] = v
+    args_cmdline = Namespace(**merged_dict)
 
     try:
         cfgfilepath = os.path.join(args_cmdline.model_path, "cfg_args")
@@ -114,7 +120,7 @@ def get_combined_args(parser : ArgumentParser):
             print("Config file found: {}".format(cfgfilepath))
             cfgfile_string = cfg_file.read()
     except TypeError:
-        print("Config file not found at")
+        print("Config file not found at", args_cmdline)
         pass
     args_cfgfile = eval(cfgfile_string)
 
@@ -122,4 +128,5 @@ def get_combined_args(parser : ArgumentParser):
     for k,v in vars(args_cmdline).items():
         if v != None:
             merged_dict[k] = v
+
     return Namespace(**merged_dict)

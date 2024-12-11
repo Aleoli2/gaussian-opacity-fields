@@ -64,14 +64,14 @@ class View(nn.Module):
         self.world_view_transform = torch.tensor(np.float32(self.world_view_transform)).transpose(0, 1).cuda()
         
 class Renderer():
-    def __init__(self):
+    def __init__(self, args=None):
         # Set up command line argument parser
         parser = ArgumentParser(description="Testing script parameters")
         
         self.model = ModelParams(parser, sentinel=True)
         self.pipeline = PipelineParams(parser)
         parser.add_argument("--iteration", default=-1, type=int)
-        args = get_combined_args(parser)
+        args = get_combined_args(parser, args)
 
         # TDO load from config file
         self.camera_model = { "fl_x": 914.7086181640625,

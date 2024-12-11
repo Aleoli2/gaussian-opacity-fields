@@ -12,6 +12,8 @@ find_library(libcnpy cnpy ${CONDA_PREFIX}/lib)
 include_directories(${CONDA_PREFIX}/include)
 
 # TODO: fix this
+
+set(Torch_DIR "/usr/local/lib/python3.9/dist-packages/torch/share/cmake/Torch")
 find_package(Torch REQUIRED)
 find_package(CGAL REQUIRED)
 # find_package(pybind11 REQUIRED)

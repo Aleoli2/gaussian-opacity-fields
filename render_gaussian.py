@@ -92,10 +92,9 @@ class Renderer():
         view = View(rotation, translation, self.camera_model["fl_x"], self.camera_model["fl_y"], self.camera_model["w"], self.camera_model["h"])
         rendering = render(view, self.gaussians, self.pipeline, self.background, kernel_size=self.kernel_size)["render"]
         rendering = rendering[:3, :, :]
-        return rendering
-        # image_path=os.path.join("/workspace/gaussian-opacity-fields/outputs", '{0:05d}'.format(1) + ".png")
-        # torchvision.utils.save_image(rendering, image_path)
-        # os.chmod(image_path, 0o777)
+        image = rendering.data.cpu().numpy()
+        image *= 255
+        return image.astype(np.uint8)
 
 if __name__ == "__main__":
     renderer = Renderer()

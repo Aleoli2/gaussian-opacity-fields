@@ -24,6 +24,7 @@ from gaussian_renderer import GaussianModel
 from utils.graphics_utils import getProjectionMatrix, focal2fov
 import time
 import numpy as np
+import cv2
 
 
 class View(nn.Module):
@@ -73,11 +74,17 @@ class Renderer():
         parser.add_argument("--iteration", default=-1, type=int)
         args = get_combined_args(parser, args)
 
-        # TDO load from config file
-        self.camera_model = { "fl_x": 914.7086181640625,
-        "fl_y": 912.5759887695312,
-        "w": 1280,
-        "h": 720}
+        camera_model_path = args.camera_model
+        with open(camera_model_path, 'r') as f:
+            for line in f:
+                if line.startswith("#"):
+                    continue
+                data = line.split(" ")
+                break
+        self.camera_model = { "fl_x": float(data[4]),
+        "fl_y": float(data[5]),
+        "w": float(data[2]),
+        "h": float(data[3])}
 
         dataset = self.model.extract(args)
         self.gaussians = GaussianModel(dataset.sh_degree)
@@ -96,12 +103,16 @@ class Renderer():
         image *= 255
         return image.astype(np.uint8)
 
+#Check the renderring and computational time [unused]
 if __name__ == "__main__":
     renderer = Renderer()
     R = np.array([[-0.9439490687833039, -0.012658517779477973, 0.32984832494763394], [-0.32913601383730196, -0.039867014542148096, -0.9434405681052662], [0.025092627172631866, -0.9991248085595327, 0.03346605716920529]])
     T = np.array([-12.574966256566968, 38.94981550209616, -0.06905938699614564])
     start=time.clock_gettime_ns(time.CLOCK_THREAD_CPUTIME_ID)
     for _ in range(30):
-        renderer.render_view(R, T)
+        image=renderer.render_view(R, T)
     end=time.clock_gettime_ns(time.CLOCK_THREAD_CPUTIME_ID)
     print("Mean rendering time (ms): {} FPS: {}".format((end-start)*10**-6/30,(1/((end-start)*10**-9)*30)))
+    image = image.swapaxes(0, 2).swapaxes(0, 1)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    cv2.imwrite("test.png", image)

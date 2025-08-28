@@ -105,9 +105,9 @@ class OptimizationParams(ParamGroup):
 def get_combined_args(parser : ArgumentParser, args=None):
     cmdlne_string = sys.argv[1:]
     cfgfile_string = "Namespace()"
-    args_cmdline = parser.parse_args(cmdlne_string)
+    args_cmdline, _ = parser.parse_known_args(cmdlne_string)
+    merged_dict = vars(args_cmdline).copy()
     if args is not None:
-        merged_dict = vars(args_cmdline).copy()
         for k,v in vars(args).items():
             if v != None:
                 merged_dict[k] = v
